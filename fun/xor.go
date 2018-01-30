@@ -77,8 +77,7 @@ func main() {
 	// panic("asd")
 	log.SetFlags(log.Lshortfile | log.LstdFlags)
 	ciphertext := xor(plaintext, key)
-	// decrypted := xor(ciphertext, key)
-	// log.Println(string(ciphertext))
-	b := breakXor(ciphertext)
-	log.Println(b)
+	decrypted := xor(ciphertext, key)
+	log.Println(string(ciphertext))
+	log.Println(string(decrypted))
 }
