@@ -42,28 +42,28 @@ void put_and_log_count(Map * map, char * value) {
 void build(Map *visited, const char *buf) {
 	char * start = malloc(sizeof(char) * 5);
 	strcpy(start, buf);
+	char * next;
+	int i = 0;
+
 	put_and_log_count(visited, start);
 	char * prev = start;
-	char * next;
-	int miss = 0;
-	int i = 0;
 	while (1) {
+		if (!(i < CHAIN_LEGNTH - 1) || !(visited->length < 14776336)) {
+			fputs(prev, file);
+			fputs(":", file);
+			fputs(start, file);
+			fputs("\n", file);
+			fflush(file);
+			free(next);
+			free(start);
+			return;
+		}
 		next = reversal(hash(prev));
 		if (get(visited, next) == NULL) {
 			put_and_log_count(visited, next);
-			prev = next;
 			i++;
-			if (i >= CHAIN_LEGNTH || visited->length >= 14776336) {
-				fputs(next, file);
-				fputs(":", file);
-				fputs(start, file);
-				fputs("\n", file);
-				fflush(file);
-				free(next);
-				free(start);
-				return;
-			}
-			free(next);
+			prev = next;
+			// free(next);
 			continue;
 		}
 		fputs(prev, file); // DIFFERENT! Don't make the cycle the end.
