@@ -2,26 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "hashmap.c" 
-
-char characters[62] = {
-	'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
-	'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
-	'0','1','2','3','4','5','6','7','8','9'};
-
-char itoc(int i) {
-	return characters[i % 62];
-}
-
-char * reversal(int in) {
-	char * r = malloc(sizeof(char) * 5);
-	r[0] = itoc((in >> 24) & 0xFF);
-	r[1] = itoc((in >> 16) & 0xFF);
-	r[2] = itoc((in >> 8) & 0xFF);
-	r[3] = itoc(in & 0xFF);
-	r[4] = 0; // null terminator
-	return r;
-}
+#include "lib/hashmap.h" 
+#include "lib/transform.h"
+#include "lib/hash.h"
 
 Map * load_table() {
 	FILE * fp;
@@ -29,7 +12,7 @@ Map * load_table() {
     size_t len = 0;
     ssize_t read;
 
-    fp = fopen("dammit", "r");
+    fp = fopen("rainbowtable.csv", "r");
     if (fp == NULL) {
         exit(1);
     }
@@ -58,9 +41,12 @@ void crack(Map * map, int target) {
 	char * start;
 	char * guess = reversal(target);
 	int temp = hash(guess);
+	int guesses = 0;
 	while(1) {
+		guesses++;
 		if (temp == target) {
 			printf("Is your password %s?\n", guess);
+			printf("Got it in %i guesses\n", guesses);
 			return;
 		}
 		if ((start = get(map, guess)) != NULL) {

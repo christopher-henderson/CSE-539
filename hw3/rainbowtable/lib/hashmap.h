@@ -1,22 +1,10 @@
+#ifndef HASHMAP_H
+#define HASHMAP_H
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <strings.h>
-#include "md5.h"
-
-const int DEFAULT_CAP = 100;
-
-MD5_CTX mdContext;  // needed to compute MD5
-
-int hash(char * word) {
-	int result;
-	int * temp;
-	MD5Init(&mdContext);  // compute MD5 of password
-	MD5Update(&mdContext, (unsigned char *)word, 4);
-	MD5Final(&mdContext);
-	temp = (int *) &mdContext.digest[12]; 
-	result = *temp; // result is 32 bits of MD5 -- there is a BUG here, oh well.
-	return result;
-}
+#include "hash.h"
 
 typedef struct e {
 	char * value;
@@ -51,9 +39,6 @@ void put(Map * map, char * key, char * value) {
 	if (map->values[i] == NULL) {
 		map->values[i] = NewEntry(key, value);
 		map->length++;
-		// if (0 == map->length % 100000) {
-		// 	printf("plain %i\n", map->length);
-		// }
 		return;
 	}
 	if (strcmp(map->values[i]->key, key) == 0) {
@@ -70,18 +55,12 @@ void put(Map * map, char * key, char * value) {
 		if (next->next == NULL) {
 			next->next = (struct Entry *) NewEntry(key, value);
 			map->length++;
-			// if (0 == map->length % 100000) {
-			// 	printf("N bucket %i\n", map->length);
-			// }
 			return;
 		}
 		next = (Entry *) next->next;
 	}
 	map->values[i]->next = (struct Entry *) NewEntry(key, value);
 	map->length++;
-	// if (0 == map->length % 100000) {
-	// 	printf("1 bucket%i\n", map->length);
-	// }
 }
 
 char * get(Map * map, char * key) {
@@ -128,23 +107,4 @@ void delete(Map * map, char * key) {
 	}
 }
 
-
-// int main() {
-
-// 	// Map * m = NewMap(2);
-// 	put(m, "bob", "bob");
-// 	put(m, "alice", "alice");
-// 	printf("%s\n", get(m ,"bob"));
-// 	printf("%s\n", get(m ,"alice"));
-// 	put(m, "eve", "eve");
-// 	printf("%s\n", get(m ,"eve"));
-// 	printf("%i\n", m->length);
-// 	delete(m, "alice");
-// 	printf("%s\n", get(m, "bob"));
-// 	printf("%i\n", m->length);
-// 	delete(m, "bob");
-// 	printf("%s\n", get(m, "bob"));
-// 	printf("%s\n", get(m, "alice"));
-// 	put(m, "alice", "alice");
-// 	printf("%s\n", get(m, "alice"));
-// }
+#endif
